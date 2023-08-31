@@ -79,6 +79,7 @@ We don't have a real API for this challenge, so we added some utilities to simul
 **Expected:** Options dropdown moves with its parent input as you scroll the page
 
 **Actual:** Options dropdown stays in the same position as you scroll the page, losing the reference to the select input
+**Solution** index.css :- changed position attribute for 'RampInputSelect--dropdown-container' to absolute.
 
 # Bug 2: Approve checkbox not working
 
@@ -89,6 +90,9 @@ We don't have a real API for this challenge, so we added some utilities to simul
 **Expected:** Clicking the checkbox toggles its value
 
 **Actual:** Nothing happens
+
+**Solution**:- components/InputCheckBox/index.tsx -> Changed the onclick behaviour previously label was clicked and not the element, so placed the input tag in the label and it worked- added this - <label
+htmlFor={inputId}
 
 # Bug 3: Cannot select _All Employees_ after selecting an employee
 
@@ -103,6 +107,8 @@ We don't have a real API for this challenge, so we added some utilities to simul
 
 **Actual:** The page crashes
 
+**Solution** App.tsx -> check for null value when we select all employees
+
 # Bug 4: Clicking on View More button not showing correct data
 
 **How to reproduce:**
@@ -113,6 +119,9 @@ We don't have a real API for this challenge, so we added some utilities to simul
 **Expected:** Initial transactions plus new transactions are shown on the page
 
 **Actual:** New transactions replace initial transactions, losing initial transactions
+
+**Solution** utils/request.ts -> start page is set to 0 added this -> const start = 0
+const end = page \* TRANSACTIONS_PER_PAGE + TRANSACTIONS_PER_PAGE
 
 # Bug 5: Employees filter not available during loading more data
 
@@ -142,6 +151,8 @@ _This bug has 2 wrong behaviors that will be fixed with the same solution_
 
 **Actual:** The employees filter shows "Loading employees..." after clicking **View more** until new transactions are loaded.
 
+**Solution** App.tsx :- move the await paginatedTransactionsUtils.fetchAll() to after setIsLoading(false) as it wont wait for paginatedTransactionsUtils.fetchAll() to finish to set to false
+
 # Bug 6: View more button not working as expected
 
 _This bug has 2 wrong behaviors that can be fixed with the same solution. It's acceptable to fix with separate solutions as well._
@@ -170,6 +181,8 @@ _This bug has 2 wrong behaviors that can be fixed with the same solution. It's a
 
 **Actual:** When you reach the end of the data, the **View More** button is still showing and you are still able to click the button. If you click it, the page crashes.
 
+**Solution** App.tsx -> Added a condition to check paginatedTransactions !== null && paginatedTransactions.nextPage !== null on line 82 and 83 this will make sure that we are checking only when there are transactions on the page.
+
 # Bug 7: Approving a transaction won't persist the new value
 
 _You need to fix some of the previous bugs in order to reproduce_
@@ -188,6 +201,8 @@ _You need to fix some of the previous bugs in order to reproduce_
 **Expected:** In steps 6 and 8, toggled transaction kept the same value it was given in step 2 _(E.g. Social Media Ads Inc is unchecked)_
 
 **Actual:** In steps 6 and 8, toggled transaction lost the value given in step 2. _(E.g. Social Media Ads Inc is checked again)_
+
+**Solution** components/Transactions/TransactionPane.tsx -> clear the cache only when new changes are made. This approach is more efficient because it avoids unnecessary overhead while still ensuring that the cache is up to date. added clearCache()
 
 ## Submission
 
